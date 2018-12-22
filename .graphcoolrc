@@ -1,0 +1,3 @@
+targets:
+  dev: shared-eu-west-1/cjpeel49p81sr0135wsewoo11
+  default: dev

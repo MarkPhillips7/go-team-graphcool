@@ -1,0 +1,372 @@
+enum Availability {
+  ACTIVE
+  UNAVAILABLE
+}
+
+enum GameActivityStatus {
+  PENDING
+  IN_PROGRESS
+  STOPPED
+  COMPLETED
+}
+
+enum GameActivityType {
+  OFFICIAL
+  SUPPLEMENTAL
+  DEMO
+  PLAN
+}
+
+enum GamePeriodType {
+  REGULATION
+  STANDARD_OVERTIME
+  GOLDEN_GOAL_OVERTIME
+  PENALTY_KICKS
+}
+
+enum GameStatus {
+  SCHEDULED
+  POSTPONED
+  IN_PROGRESS
+  COMPLETED
+  CANCELED_PERMANENTLY
+  PENDING_RESCHEDULE
+}
+
+enum Gender {
+  FEMALE
+  MALE
+}
+
+enum LateralLocation {
+  LEFT
+  LEFT_CENTRAL
+  CENTRAL
+  RIGHT_CENTRAL
+  RIGHT
+}
+
+enum ParkLocation {
+  FIELD
+  BENCH
+  UNKNOWN
+}
+
+enum PitchLocation {
+  GOAL_BOX
+  DEFENSIVE_END
+  MIDDLE
+  OFFENSIVE_END
+}
+
+enum TimeOfYearSeason {
+  SPRING
+  SUMMER
+  FALL
+  WINTER
+}
+
+type User @model {
+  id: ID! @isUnique
+  name: String
+  dateOfBirth: DateTime
+  gender: Gender
+
+  posts: [Post!]! @relation(name: "UserPosts")
+  teamsAsFan: [Team!]! @relation(name: "TeamsFans")
+  teamSeasonsAsPlayer: [TeamSeason!]! @relation(name: "TeamSeasonsPlayers")
+  teamSeasonsAsCoach: [TeamSeason!]! @relation(name: "TeamSeasonsCoaches")
+  teamSeasonsAsParent: [TeamSeason!]! @relation(name: "TeamSeasonsParents")
+  parentsGuardians: [User!]! @relation(name: "ChildrenParentsGuardians")
+  children: [User!]! @relation(name: "ChildrenParentsGuardians")
+  gamePlayers: [GamePlayer!]! @relation(name: "PlayerOnGamePlayers")
+  playerPositions: [PlayerPosition!]! @relation(name: "PlayerOnPlayerPosition")
+}
+
+type Post @model {
+  id: ID! @isUnique
+  title: String!
+  # Every relation also required a back-relation (to determine 1:1, 1:n or n:m)
+  author: User! @relation(name: "UserPosts")
+}
+
+type Sport @model {
+  id: ID! @isUnique
+  name: String!
+  tags: [String!]
+
+  organizations: [Organization!]! @relation(name: "SportsOrganizations")
+  leagues: [League!]! @relation(name: "SportOnLeague")
+  # safetyRules: [SafetyRule!]! @relation(name: "SportsSafetyRules")
+}
+
+type Organization @model {
+  id: ID! @isUnique
+  name: String!
+  tags: [String!]
+  location: String
+  # country: String
+  # state: String
+  # city: String
+
+  sports: [Sport!]! @relation(name: "SportsOrganizations")
+  leagues: [League!]! @relation(name: "OrganizationOnLeague")
+}
+
+# type SafetyRule @model {
+#   id: ID! @isUnique
+#   name: String!
+#   canHeadBallDuringPractice: Boolean
+#   canHeadBallDuringGame: Boolean
+#   sports: [Sport!]! @relation(name: "SportsSafetyRules")
+#   leagues: [League!]! @relation(name: "LeagueSafetyRules")
+# }
+#
+# type CoachRule @model {
+#   id: ID! @isUnique
+#   name: String!
+#   minimumPlaytimeMinutes: Integer
+#   minimumTimeOutAfterHeadInjury: Integer
+# }
+#
+# type PlayerRule @model {
+#   id: ID! @isUnique
+#   name: String!
+#   canGuestPlayRegularSeason: Boolean
+#   canGuestPlayPlayoffs: Boolean
+# }
+#
+# type GenderRule @model {
+#   id: ID! @isUnique
+#   name: String!
+#   minimumFemalesInGameAtAnyTime: Integer
+#   minimumMalesInGameAtAnyTime: Integer
+# }
+
+# first half, third quarter, second overtime, etc.
+type GamePeriod @model {
+  id: ID! @isUnique
+  name: String!
+  gamePeriodType: GamePeriodType!
+  durationSeconds: Int
+  postDurationSeconds: Int # time between halves if first half
+  gameDefinitions: [GameDefinition!]! @relation(name: "GameDefinitionsGamePeriods")
+}
+
+type GameDefinition @model {
+  id: ID! @isUnique
+  name: String!
+
+  numberSimultaneousGames: Int # U8 involves 2 4v4 simultaneous games
+  numberOfReferees: Int # 0 for Hotshots Or U8, 1 for U10, etc.
+  includeGoalies: Boolean
+  numberPlayersPerSide: Int
+  typicalDurationSeconds: Int
+  maximumDurationSeconds: Int
+  betweenGamesSeconds: Int
+  gamePeriods: [GamePeriod!]! @relation(name: "GameDefinitionsGamePeriods")
+  leagues: [League!]! @relation(name: "GameDefinitionOnLeague")
+}
+
+# Every sport is so different that probably will need to make most of
+# this soccer specific with something like this:
+
+# interface League {
+#   id: ID! @isUnique
+#   name: String!
+#   sport: Sport
+# }
+
+# type SoccerLeague implements League @model {
+
+type League @model {
+  id: ID! @isUnique
+  name: String!
+  tags: [String!]
+
+  gameDefinition: GameDefinition! @relation(name: "GameDefinitionOnLeague")
+  # safetyRules: [SafetyRule!]! @relation(name: "LeagueSafetyRules")
+  # coachRules: [CoachRule!]! @relation(name: "LeagueCoachRules")
+  # genderRules: [GenderRule!]! @relation(name: "LeagueGenderRules")
+  # playerRules: [PlayerRule!]! @relation(name: "LeaguePlayerRules")
+  # gameRules - numberPlayersPerSide, includeGoalie, isOffsidesEnforced
+  # teamRules - minimumRosterSize, maximumRosterSize
+  sport: Sport! @relation(name: "SportOnLeague")
+  organization: Organization! @relation(name: "OrganizationOnLeague")
+  teams: [Team!]! @relation(name: "LeagueOnTeam")
+  seasons: [Season!]! @relation(name: "LeaguesSeasons")
+  leagueSeasons: [LeagueSeason!]! @relation(name: "LeagueOnLeagueSeason")
+}
+
+type Team @model {
+  id: ID! @isUnique
+  tags: [String!]
+  name: String!
+  fans: [User!]! @relation(name: "TeamsFans")
+  league: League @relation(name: "LeagueOnTeam")
+  teamSeasons: [TeamSeason!]! @relation(name: "TeamOnTeamSeason")
+}
+
+type Season @model {
+  id: ID! @isUnique
+  tags: [String!]
+  name: String!
+  year: Int
+  timeOfYearSeason: TimeOfYearSeason
+  leagues: [League!]! @relation(name: "LeaguesSeasons")
+  leagueSeasons: [LeagueSeason!]! @relation(name: "SeasonOnLeagueSeason")
+}
+
+type LeagueSeason @model {
+  id: ID! @isUnique
+  tags: [String!]
+  name: String!
+  minimumBirthDate: DateTime
+  maximumBirthDate: DateTime
+  startDate: DateTime
+  endDate: DateTime
+  league: League! @relation(name: "LeagueOnLeagueSeason")
+  season: Season! @relation(name: "SeasonOnLeagueSeason")
+  teamSeasons: [TeamSeason!]! @relation(name: "LeagueSeasonOnTeamSeason")
+  # gameTimeRanges: Saturdays 9 a.m.-3 p.m., Mondays 6 p.m.-9 p.m.
+}
+
+type TeamSeason @model {
+  id: ID! @isUnique
+  tags: [String!]
+  name: String!
+  players: [User!]! @relation(name: "TeamSeasonsPlayers")
+  coaches: [User!]! @relation(name: "TeamSeasonsCoaches")
+  parents: [User!]! @relation(name: "TeamSeasonsParents")
+  team: Team! @relation(name: "TeamOnTeamSeason")
+  leagueSeason: LeagueSeason! @relation(name: "LeagueSeasonOnTeamSeason")
+  gamesAsHomeTeam: [Game!]! @relation(name: "HomeTeamSeasonOnGame")
+  gamesAsAwayTeam: [Game!]! @relation(name: "AwayTeamSeasonOnGame")
+  # gameWeeks: Week 1-9
+  substitutions: [Substitution!]! @relation(name: "TeamSeasonOnSubstitution")
+  formationSubstitutions: [FormationSubstitution!]! @relation(name: "TeamSeasonOnFormationSubstitution")
+}
+
+type Substitution @model {
+  id: ID! @isUnique
+  name: String!
+  gameActivityStatus: GameActivityStatus!
+  gameActivityType: GameActivityType!
+  game: Game @relation(name: "GameOnSubstitution")
+  teamSeason: TeamSeason @relation(name: "TeamSeasonOnSubstitution")
+  timestamp: DateTime
+  actualSeconds: Int  # actual seconds since the start of game
+  gameSeconds: Int  # game seconds (ignores breaks for halftime/stoppage time)
+  inPlayerPositionAssignments: [PlayerPositionAssignment!]! @relation(name: "SubstitutionsInPlayerPositionAssignments")
+  outPlayerPositionAssignments: [PlayerPositionAssignment!]! @relation(name: "SubstitutionsOutPlayerPositionAssignments")
+}
+
+type FormationSubstitution @model {
+  id: ID! @isUnique
+  name: String!
+  gameActivityStatus: GameActivityStatus!
+  gameActivityType: GameActivityType!
+  game: Game @relation(name: "GameOnFormationSubstitution")
+  teamSeason: TeamSeason @relation(name: "TeamSeasonOnFormationSubstitution")
+  timestamp: DateTime
+  actualSeconds: Int  # actual seconds since the start of game
+  gameSeconds: Int  # game seconds (ignores breaks for halftime/stoppage time)
+  inFormation: Formation! @relation(name: "FormationSubstitutionsInFormation")
+  outFormation: Formation! @relation(name: "FormationSubstitutionsOutFormation")
+}
+
+# type GameActivity @model {
+#   id: ID! @isUnique
+#   name: String!
+#   gameActivityStatus: GameActivityStatus!
+#   gameActivityType: GameActivityType!
+#   game: Game! @relation(name: "GameOnGameActivity")
+#   timestamp: DateTime!
+#
+#   # gameFormations: [GameFormation!]! @relation(name: "GameActivitiesGameFormations")
+# }
+
+type Game @model {
+  id: ID! @isUnique
+  name: String!
+  gameStatus: GameStatus!
+  location: String
+  scheduledStartTime: DateTime
+  homeTeamSeason: TeamSeason @relation(name: "HomeTeamSeasonOnGame")
+  awayTeamSeason: TeamSeason @relation(name: "AwayTeamSeasonOnGame")
+  gamePlayers: [GamePlayer!]! @relation(name: "GameOnGamePlayer")
+  # gameFormations: [GameFormation!]! @relation(name: "GameOnGameFormation")
+  # gameActivities: [GameActivity!]! @relation(name: "GameOnGameActivity")
+  substitutions: [Substitution!]! @relation(name: "GameOnSubstitution")
+  formationSubstitutions: [FormationSubstitution!]! @relation(name: "GameOnFormationSubstitution")
+}
+
+type GamePlayer @model {
+  id: ID! @isUnique
+  name: String!
+  availability: Availability!
+  player: User! @relation(name: "PlayerOnGamePlayers")
+  game: Game! @relation(name: "GameOnGamePlayer")
+}
+
+type PositionCategory @model {
+  id: ID! @isUnique
+  name: String!
+  color: String # for color-coded lineup and substitutions
+  parkLocation: ParkLocation
+  pitchLocation: PitchLocation
+  positions: [Position!]! @relation(name: "PositionCategoryOnPosition")
+}
+
+type Formation @model {
+  id: ID! @isUnique
+  name: String!
+  formationCode: String # 1-4-3-3, 1-1.2.1-4-2 (goalie-defense-midfield-offense)
+  positions: [Position!]! @relation(name: "FormationsPositions")
+  inFormationSubstitution: [FormationSubstitution!]! @relation(name: "FormationSubstitutionsInFormation")
+  outFormationSubstitution: [FormationSubstitution!]! @relation(name: "FormationSubstitutionsOutFormation")
+  # gameFormations: [GameFormation!]! @relation(name: "FormationOnGameFormation")
+}
+
+# type GameFormation @model {
+#   id: ID! @isUnique
+#   name: String!
+#   formation: Formation! @relation(name: "FormationOnGameFormation")
+#   game: Game! @relation(name: "GameOnGameFormation")
+#   teamSeason: TeamSeason! @relation(name: "TeamSeasonOnGameFormation")
+#   # gameFormationAssignments: [GameFormationAssignment!]! @relation(name: "GameFormationOnGameFormationAssignment")
+# }
+
+type Position @model {
+  id: ID! @isUnique
+  name: String!
+  lateralLocation: LateralLocation
+  positionCategory: PositionCategory @relation(name: "PositionCategoryOnPosition")
+  formations: [Formation!]! @relation(name: "FormationsPositions")
+  playerPositions: [PlayerPosition!]! @relation(name: "PositionOnPlayerPosition")
+}
+
+type PlayerPosition @model {
+  id: ID! @isUnique
+  name: String!
+  player: User! @relation(name: "PlayerOnPlayerPosition")
+  position: Position! @relation(name: "PositionOnPlayerPosition")
+  playerPositionAssignments: [PlayerPositionAssignment!]! @relation(name: "PlayerPositionOnPlayerPositionAssignment")
+}
+
+type PlayerPositionAssignment @model {
+  id: ID! @isUnique
+  name: String!
+  timestamp: DateTime
+  playerPosition: PlayerPosition! @relation(name: "PlayerPositionOnPlayerPositionAssignment")
+  inSubstitutions: [Substitution!]! @relation(name: "SubstitutionsInPlayerPositionAssignments")
+  outSubstitutions: [Substitution!]! @relation(name: "SubstitutionsOutPlayerPositionAssignments")
+  # gameFormationAssignments: [GameFormationAssignment!]! @relation(name: "GameFormationAssignmentsPlayerPositionAssignments")
+}
+
+# type GameFormationAssignment @model {
+#   id: ID! @isUnique
+#   name: String!
+#   playerPositionAssignments: [PlayerPositionAssignment!]! @relation(name: "GameFormationAssignmentsPlayerPositionAssignments")
+#   gameFormation: GameFormation! @relation(name: "GameFormationOnGameFormationAssignment")
+# }
