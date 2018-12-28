@@ -59,12 +59,19 @@ enum PitchLocation {
   OFFENSIVE_END
 }
 
+enum Roles {
+  FAN
+  COACH
+  PLAYER
+}
+
 enum TimeOfYearSeason {
   SPRING
   SUMMER
   FALL
   WINTER
 }
+
 
 type User @model {
   id: ID! @isUnique
@@ -81,6 +88,8 @@ type User @model {
   children: [User!]! @relation(name: "ChildrenParentsGuardians")
   gamePlayers: [GamePlayer!]! @relation(name: "PlayerOnGamePlayers")
   playerPositions: [PlayerPosition!]! @relation(name: "PlayerOnPlayerPosition")
+  positionCategoryPreferencesAsPlayer: [PositionCategoryPreference!]! @relation(name: "PlayerOnPositionCategoryPreference")
+  positionCategoryPreferencesAsPreferer: [PositionCategoryPreference!]! @relation(name: "PrefererOnPositionCategoryPreference")
 }
 
 type Post @model {
@@ -316,6 +325,14 @@ type PositionCategory @model {
   parkLocation: ParkLocation
   pitchLocation: PitchLocation
   positions: [Position!]! @relation(name: "PositionCategoryOnPosition")
+  positionCategoryPreferences: [PositionCategoryPreference!]! @relation(name: "PositionCategoryOnPositionCategoryPreference")
+}
+
+type PositionCategoryPreference @model {
+  id: ID! @isUnique
+  player: User! @relation(name: "PlayerOnPositionCategoryPreference")
+  preferer: User! @relation(name: "PrefererOnPositionCategoryPreference")
+  positionCategory: PositionCategory! @relation(name: "PositionCategoryOnPositionCategoryPreference")
 }
 
 type Formation @model {
