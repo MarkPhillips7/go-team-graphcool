@@ -65,6 +65,13 @@ enum Roles {
   PLAYER
 }
 
+enum PlayerPositionAssignmentType {
+  CHANGE # change position on the field
+  INITIAL # starting lineup position
+  IN # change from bench to position on the field
+  OUT # to the bench
+}
+
 enum TimeOfYearSeason {
   SPRING
   SUMMER
@@ -264,10 +271,9 @@ type Substitution @model {
   game: Game @relation(name: "GameOnSubstitution")
   teamSeason: TeamSeason @relation(name: "TeamSeasonOnSubstitution")
   timestamp: DateTime
-  actualSeconds: Int  # actual seconds since the start of game
+  totalSeconds: Int  # total seconds since the start of game
   gameSeconds: Int  # game seconds (ignores breaks for halftime/stoppage time)
-  inPlayerPositionAssignments: [PlayerPositionAssignment!]! @relation(name: "SubstitutionsInPlayerPositionAssignments")
-  outPlayerPositionAssignments: [PlayerPositionAssignment!]! @relation(name: "SubstitutionsOutPlayerPositionAssignments")
+  playerPositionAssignments: [PlayerPositionAssignment!]! @relation(name: "SubstitutionsPlayerPositionAssignments")
 }
 
 type FormationSubstitution @model {
@@ -278,10 +284,9 @@ type FormationSubstitution @model {
   game: Game @relation(name: "GameOnFormationSubstitution")
   teamSeason: TeamSeason @relation(name: "TeamSeasonOnFormationSubstitution")
   timestamp: DateTime
-  actualSeconds: Int  # actual seconds since the start of game
+  totalSeconds: Int  # total seconds since the start of game
   gameSeconds: Int  # game seconds (ignores breaks for halftime/stoppage time)
-  inFormation: Formation! @relation(name: "FormationSubstitutionsInFormation")
-  outFormation: Formation! @relation(name: "FormationSubstitutionsOutFormation")
+  formation: Formation! @relation(name: "FormationOnFormationSubstitution")
 }
 
 # type GameActivity @model {
@@ -340,8 +345,7 @@ type Formation @model {
   name: String!
   formationCode: String # 1-4-3-3, 1-1.2.1-4-2 (goalie-defense-midfield-offense)
   positions: [Position!]! @relation(name: "FormationsPositions")
-  inFormationSubstitution: [FormationSubstitution!]! @relation(name: "FormationSubstitutionsInFormation")
-  outFormationSubstitution: [FormationSubstitution!]! @relation(name: "FormationSubstitutionsOutFormation")
+  formationSubstitution: [FormationSubstitution!]! @relation(name: "FormationOnFormationSubstitution")
   # gameFormations: [GameFormation!]! @relation(name: "FormationOnGameFormation")
 }
 
@@ -375,9 +379,9 @@ type PlayerPositionAssignment @model {
   id: ID! @isUnique
   name: String!
   timestamp: DateTime
+  playerPositionAssignmentType: PlayerPositionAssignmentType
   playerPosition: PlayerPosition! @relation(name: "PlayerPositionOnPlayerPositionAssignment")
-  inSubstitutions: [Substitution!]! @relation(name: "SubstitutionsInPlayerPositionAssignments")
-  outSubstitutions: [Substitution!]! @relation(name: "SubstitutionsOutPlayerPositionAssignments")
+  substitutions: [Substitution!]! @relation(name: "SubstitutionsPlayerPositionAssignments")
   # gameFormationAssignments: [GameFormationAssignment!]! @relation(name: "GameFormationAssignmentsPlayerPositionAssignments")
 }
 
