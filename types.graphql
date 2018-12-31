@@ -93,7 +93,7 @@ type User @model {
   teamSeasonsAsParent: [TeamSeason!]! @relation(name: "TeamSeasonsParents")
   parentsGuardians: [User!]! @relation(name: "ChildrenParentsGuardians")
   children: [User!]! @relation(name: "ChildrenParentsGuardians")
-  gamePlayers: [GamePlayer!]! @relation(name: "PlayerOnGamePlayers")
+  gamePlayers: [GamePlayer!]! @relation(name: "PlayerOnGamePlayer")
   playerPositions: [PlayerPosition!]! @relation(name: "PlayerOnPlayerPosition")
   positionCategoryPreferencesAsPlayer: [PositionCategoryPreference!]! @relation(name: "PlayerOnPositionCategoryPreference")
   positionCategoryPreferencesAsPreferer: [PositionCategoryPreference!]! @relation(name: "PrefererOnPositionCategoryPreference")
@@ -256,11 +256,10 @@ type TeamSeason @model {
   parents: [User!]! @relation(name: "TeamSeasonsParents")
   team: Team! @relation(name: "TeamOnTeamSeason")
   leagueSeason: LeagueSeason! @relation(name: "LeagueSeasonOnTeamSeason")
-  gamesAsHomeTeam: [Game!]! @relation(name: "HomeTeamSeasonOnGame")
-  gamesAsAwayTeam: [Game!]! @relation(name: "AwayTeamSeasonOnGame")
+  gameTeamSeasons: [GameTeamSeason!]! @relation(name: "TeamSeasonOnGameTeamSeason")
   # gameWeeks: Week 1-9
-  substitutions: [Substitution!]! @relation(name: "TeamSeasonOnSubstitution")
-  formationSubstitutions: [FormationSubstitution!]! @relation(name: "TeamSeasonOnFormationSubstitution")
+  # substitutions: [Substitution!]! @relation(name: "TeamSeasonOnSubstitution")
+  # formationSubstitutions: [FormationSubstitution!]! @relation(name: "TeamSeasonOnFormationSubstitution")
 }
 
 type Substitution @model {
@@ -268,8 +267,8 @@ type Substitution @model {
   name: String!
   gameActivityStatus: GameActivityStatus!
   gameActivityType: GameActivityType!
-  game: Game @relation(name: "GameOnSubstitution")
-  teamSeason: TeamSeason @relation(name: "TeamSeasonOnSubstitution")
+  gameTeamSeason: GameTeamSeason @relation(name: "GameTeamSeasonOnSubstitution")
+  # teamSeason: TeamSeason @relation(name: "TeamSeasonOnSubstitution")
   timestamp: DateTime
   totalSeconds: Int  # total seconds since the start of game
   gameSeconds: Int  # game seconds (ignores breaks for halftime/stoppage time)
@@ -281,8 +280,8 @@ type FormationSubstitution @model {
   name: String!
   gameActivityStatus: GameActivityStatus!
   gameActivityType: GameActivityType!
-  game: Game @relation(name: "GameOnFormationSubstitution")
-  teamSeason: TeamSeason @relation(name: "TeamSeasonOnFormationSubstitution")
+  gameTeamSeason: GameTeamSeason @relation(name: "GameTeamSeasonOnFormationSubstitution")
+  # teamSeason: TeamSeason @relation(name: "TeamSeasonOnFormationSubstitution")
   timestamp: DateTime
   totalSeconds: Int  # total seconds since the start of game
   gameSeconds: Int  # game seconds (ignores breaks for halftime/stoppage time)
@@ -306,21 +305,33 @@ type Game @model {
   gameStatus: GameStatus!
   location: String
   scheduledStartTime: DateTime
-  homeTeamSeason: TeamSeason @relation(name: "HomeTeamSeasonOnGame")
-  awayTeamSeason: TeamSeason @relation(name: "AwayTeamSeasonOnGame")
-  gamePlayers: [GamePlayer!]! @relation(name: "GameOnGamePlayer")
+  gameTeamSeasons: [GameTeamSeason!]! @relation(name: "GameOnGameTeamSeason")
+  # homeTeamSeason: TeamSeason @relation(name: "HomeTeamSeasonOnGame")
+  # awayTeamSeason: TeamSeason @relation(name: "AwayTeamSeasonOnGame")
+  # gamePlayers: [GamePlayer!]! @relation(name: "GameOnGamePlayer")
   # gameFormations: [GameFormation!]! @relation(name: "GameOnGameFormation")
   # gameActivities: [GameActivity!]! @relation(name: "GameOnGameActivity")
-  substitutions: [Substitution!]! @relation(name: "GameOnSubstitution")
-  formationSubstitutions: [FormationSubstitution!]! @relation(name: "GameOnFormationSubstitution")
+  # substitutions: [Substitution!]! @relation(name: "GameOnSubstitution")
+  # formationSubstitutions: [FormationSubstitution!]! @relation(name: "GameOnFormationSubstitution")
+}
+
+type GameTeamSeason @model {
+  id: ID! @isUnique
+  name: String!
+  isHomeTeam: Boolean
+  teamSeason: TeamSeason @relation(name: "TeamSeasonOnGameTeamSeason")
+  game: Game! @relation(name: "GameOnGameTeamSeason")
+  gamePlayers: [GamePlayer!]! @relation(name: "GameTeamSeasonOnGamePlayer")
+  substitutions: [Substitution!]! @relation(name: "GameTeamSeasonOnSubstitution")
+  formationSubstitutions: [FormationSubstitution!]! @relation(name: "GameTeamSeasonOnFormationSubstitution")
 }
 
 type GamePlayer @model {
   id: ID! @isUnique
   name: String!
   availability: Availability!
-  player: User! @relation(name: "PlayerOnGamePlayers")
-  game: Game! @relation(name: "GameOnGamePlayer")
+  player: User! @relation(name: "PlayerOnGamePlayer")
+  gameTeamSeason: GameTeamSeason! @relation(name: "GameTeamSeasonOnGamePlayer")
 }
 
 type PositionCategory @model {
