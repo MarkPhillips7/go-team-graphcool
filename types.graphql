@@ -328,7 +328,6 @@ type GameTeamSeason @model {
 
 type GamePlayer @model {
   id: ID! @isUnique
-  name: String!
   availability: Availability!
   player: User! @relation(name: "PlayerOnGamePlayer")
   gameTeamSeason: GameTeamSeason! @relation(name: "GameTeamSeasonOnGamePlayer")
