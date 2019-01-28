@@ -264,7 +264,6 @@ type TeamSeason @model {
 
 type Substitution @model {
   id: ID! @isUnique
-  name: String!
   gameActivityStatus: GameActivityStatus!
   gameActivityType: GameActivityType!
   gameTeamSeason: GameTeamSeason @relation(name: "GameTeamSeasonOnSubstitution")
@@ -277,7 +276,6 @@ type Substitution @model {
 
 type FormationSubstitution @model {
   id: ID! @isUnique
-  name: String!
   gameActivityStatus: GameActivityStatus!
   gameActivityType: GameActivityType!
   gameTeamSeason: GameTeamSeason @relation(name: "GameTeamSeasonOnFormationSubstitution")
@@ -315,12 +313,22 @@ type Game @model {
   # formationSubstitutions: [FormationSubstitution!]! @relation(name: "GameOnFormationSubstitution")
 }
 
+type GamePlan @model {
+  id: ID! @isUnique
+  secondsBetweenSubs: Int
+  minimumGameTimePercentage: Int
+  # playTimeApproach: PlayTimeApproach (equalTime, preferenceByConduct, preferenceBySkill)
+  # positionApproach: PositionApproach (coachPreference, playerPreference, mostVariety)
+  gameTeamSeasons: [GameTeamSeason!]! @relation(name: "GamePlanOnGameTeamSeason")
+}
+
 type GameTeamSeason @model {
   id: ID! @isUnique
   name: String!
   isHomeTeam: Boolean
   teamSeason: TeamSeason @relation(name: "TeamSeasonOnGameTeamSeason")
   game: Game! @relation(name: "GameOnGameTeamSeason")
+  gamePlan: GamePlan @relation(name: "GamePlanOnGameTeamSeason")
   gamePlayers: [GamePlayer!]! @relation(name: "GameTeamSeasonOnGamePlayer")
   substitutions: [Substitution!]! @relation(name: "GameTeamSeasonOnSubstitution")
   formationSubstitutions: [FormationSubstitution!]! @relation(name: "GameTeamSeasonOnFormationSubstitution")
@@ -379,7 +387,6 @@ type Position @model {
 
 type PlayerPosition @model {
   id: ID! @isUnique
-  name: String!
   player: User! @relation(name: "PlayerOnPlayerPosition")
   position: Position! @relation(name: "PositionOnPlayerPosition")
   playerPositionAssignments: [PlayerPositionAssignment!]! @relation(name: "PlayerPositionOnPlayerPositionAssignment")
@@ -387,7 +394,6 @@ type PlayerPosition @model {
 
 type PlayerPositionAssignment @model {
   id: ID! @isUnique
-  name: String!
   timestamp: DateTime
   playerPositionAssignmentType: PlayerPositionAssignmentType
   playerPosition: PlayerPosition! @relation(name: "PlayerPositionOnPlayerPositionAssignment")
