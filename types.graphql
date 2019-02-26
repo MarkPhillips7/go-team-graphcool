@@ -70,6 +70,7 @@ enum PlayerPositionAssignmentType {
   INITIAL # starting lineup position
   IN # change from bench to position on the field
   OUT # to the bench
+  UNAVAILABLE # either injured or absent
 }
 
 enum TimeOfYearSeason {
@@ -388,7 +389,7 @@ type Position @model {
 type PlayerPosition @model {
   id: ID! @isUnique
   player: User! @relation(name: "PlayerOnPlayerPosition")
-  position: Position! @relation(name: "PositionOnPlayerPosition")
+  position: Position @relation(name: "PositionOnPlayerPosition")
   playerPositionAssignments: [PlayerPositionAssignment!]! @relation(name: "PlayerPositionOnPlayerPositionAssignment")
 }
 
