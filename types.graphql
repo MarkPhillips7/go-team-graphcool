@@ -381,6 +381,7 @@ type Position @model {
   id: ID! @isUnique
   name: String!
   lateralLocation: LateralLocation
+  leftToRightPercent: Float
   positionCategory: PositionCategory @relation(name: "PositionCategoryOnPosition")
   formations: [Formation!]! @relation(name: "FormationsPositions")
   playerPositions: [PlayerPosition!]! @relation(name: "PositionOnPlayerPosition")
