@@ -168,6 +168,7 @@ type GamePeriod @model {
   durationSeconds: Int
   postDurationSeconds: Int # time between halves if first half
   gameDefinitions: [GameDefinition!]! @relation(name: "GameDefinitionsGamePeriods")
+  gameActivities: [GameActivity!]! @relation(name: "GamePeriodOnGameActivity")
 }
 
 type GameDefinition @model {
@@ -287,16 +288,19 @@ type FormationSubstitution @model {
   formation: Formation! @relation(name: "FormationOnFormationSubstitution")
 }
 
-# type GameActivity @model {
-#   id: ID! @isUnique
-#   name: String!
-#   gameActivityStatus: GameActivityStatus!
-#   gameActivityType: GameActivityType!
-#   game: Game! @relation(name: "GameOnGameActivity")
-#   timestamp: DateTime!
-#
-#   # gameFormations: [GameFormation!]! @relation(name: "GameActivitiesGameFormations")
-# }
+type GameActivity @model {
+  id: ID! @isUnique
+  name: String
+  gameActivityStatus: GameActivityStatus!
+  gameActivityType: GameActivityType!
+  gamePeriod: GamePeriod @relation(name: "GamePeriodOnGameActivity")
+  game: Game! @relation(name: "GameOnGameActivity")
+  timestamp: DateTime!
+  totalSeconds: Int  # total seconds since the start of game
+  gameSeconds: Int  # game seconds (ignores breaks for halftime/stoppage time)
+
+  # gameFormations: [GameFormation!]! @relation(name: "GameActivitiesGameFormations")
+}
 
 type Game @model {
   id: ID! @isUnique
@@ -309,7 +313,7 @@ type Game @model {
   # awayTeamSeason: TeamSeason @relation(name: "AwayTeamSeasonOnGame")
   # gamePlayers: [GamePlayer!]! @relation(name: "GameOnGamePlayer")
   # gameFormations: [GameFormation!]! @relation(name: "GameOnGameFormation")
-  # gameActivities: [GameActivity!]! @relation(name: "GameOnGameActivity")
+  gameActivities: [GameActivity!]! @relation(name: "GameOnGameActivity")
   # substitutions: [Substitution!]! @relation(name: "GameOnSubstitution")
   # formationSubstitutions: [FormationSubstitution!]! @relation(name: "GameOnFormationSubstitution")
 }
