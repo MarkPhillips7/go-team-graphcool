@@ -404,6 +404,7 @@ type PlayerPositionAssignment @model {
   playerPositionAssignmentType: PlayerPositionAssignmentType
   playerPosition: PlayerPosition! @relation(name: "PlayerPositionOnPlayerPositionAssignment")
   substitutions: [Substitution!]! @relation(name: "SubstitutionsPlayerPositionAssignments")
+  gameActivityStatus: GameActivityStatus
   # gameFormationAssignments: [GameFormationAssignment!]! @relation(name: "GameFormationAssignmentsPlayerPositionAssignments")
 }
 
