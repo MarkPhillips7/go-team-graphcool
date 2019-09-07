@@ -1,0 +1,13 @@
+mutation {
+  updateGame(
+    id:"ck08v52xh0fjt0176e9pogbig"
+    location: "z- Basic Park",
+  	scheduledStartTime: "2019-09-07T17:10:00.000Z",
+  ) {
+    id
+    name
+    gameStatus
+    location
+    scheduledStartTime
+  },
+} 

@@ -1,0 +1,13 @@
+mutation {
+  createTeam (
+    name: "Maroon Mayhem"
+    leagueId: "ck07prsiu0vow0134euqtnhxo"
+  ) {
+    id
+    name
+    league {
+      id
+      name
+    }
+  }
+}

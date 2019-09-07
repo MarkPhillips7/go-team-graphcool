@@ -1,0 +1,11 @@
+mutation {
+  createLeague(
+    name: "U10 Girls Challenge"
+    gameDefinitionId: "cjpt0oyav0gej0114n96jefdv"
+    organizationId: "cjpt08fgq0esq01417pxg2whe"
+    sportId: "cjpt0r2a60fyg0136zl05serf"
+  ) {
+    id
+    name
+  }
+}

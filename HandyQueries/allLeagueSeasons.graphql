@@ -1,0 +1,19 @@
+query {
+  allLeagueSeasons {
+    id
+    name
+    tags
+    startDate
+    endDate
+    league {
+      id
+      name
+    }
+    maximumBirthDate
+    minimumBirthDate
+    season {
+      id
+      name
+    }
+  }
+}

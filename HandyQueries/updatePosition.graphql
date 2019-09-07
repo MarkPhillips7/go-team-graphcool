@@ -1,0 +1,10 @@
+mutation {
+  updatePosition (
+    id: "cjqcg85d803u60153o83m3q3e",
+    leftToRightPercent: 75
+  ) {
+    id,
+    name,
+    leftToRightPercent
+  }
+}

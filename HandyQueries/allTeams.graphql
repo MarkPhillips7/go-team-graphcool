@@ -1,0 +1,25 @@
+query {
+  allTeams {
+    id
+    name
+    league {
+      id
+      name
+      organization {
+        id
+        name
+      }
+      sport {
+        id
+        name
+      }
+      gameDefinition {
+        id
+        name
+        betweenGamesSeconds
+      }
+    }
+    tags
+
+  }
+}

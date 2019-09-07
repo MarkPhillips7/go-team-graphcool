@@ -1,0 +1,10 @@
+mutation {
+  createSeason (
+    name: "Fall 2019"
+    timeOfYearSeason: FALL
+    year: 2019
+  ) {
+    name
+    id
+  }
+}

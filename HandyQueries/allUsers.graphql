@@ -1,0 +1,11 @@
+query {
+  allUsers {
+    id
+    name
+    gender
+    dateOfBirth
+    teamSeasonsAsPlayer {
+      name
+    }
+  }
+}

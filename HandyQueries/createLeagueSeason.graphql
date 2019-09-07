@@ -1,0 +1,10 @@
+mutation {
+  createLeagueSeason (
+    name: "U10 Girls Challenge Fall 2019"
+    seasonId: "ck08cpfgf0lse01210ohfekpt"
+    leagueId: "ck07prsiu0vow0134euqtnhxo"
+  ) {
+    name
+    id
+  }
+}

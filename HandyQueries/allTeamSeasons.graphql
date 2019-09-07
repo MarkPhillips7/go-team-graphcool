@@ -1,0 +1,23 @@
+query {
+  allTeamSeasons {
+    id
+    name
+    tags
+		coaches {
+      id
+      name
+    }
+    parents {
+      id
+      name
+    }
+    players {
+      id
+      name
+    }
+    leagueSeason {
+      id
+      name
+    }
+  }
+}

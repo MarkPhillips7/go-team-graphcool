@@ -1,0 +1,24 @@
+query PlayersForTeamSeason {
+  allUsers (filter: {
+    teamSeasonsAsPlayer_some: {
+      id:"ck08dcuph0osf0130xcw56xrk"
+    }
+  }
+  ) {
+    id
+    name
+    gender
+    dateOfBirth
+
+    teamSeasonsAsPlayer {
+      name
+    }
+    positionCategoryPreferencesAsPlayer {
+      id
+      positionCategory {
+        id
+        name
+      }
+    }
+  }
+}

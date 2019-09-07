@@ -1,0 +1,32 @@
+mutation SetPlayerTeamAndPositionPreference($playerId: ID!) {
+  addToTeamSeasonsPlayers(
+    teamSeasonsAsPlayerTeamSeasonId: "ck08dcuph0osf0130xcw56xrk"
+    playersUserId: $playerId
+  ) {
+    playersUser {
+      id
+      name
+    }
+    teamSeasonsAsPlayerTeamSeason {
+      name
+    }
+  }
+  # Offense: "cjq76ezu6539u0117521givmr"
+  # Midfield: "cjq76er984vij01939wpsw9rn"
+  # Defense: "cjq76e4rm57st0131kd0uuusl"
+  # Goalie: "cjq76b0go51iz0117enecjhxk"
+  createPositionCategoryPreference (
+    playerId: $playerId
+    positionCategoryId: "cjq76e4rm57st0131kd0uuusl"
+    prefererId: $playerId
+  )
+  {
+    id
+    player {
+      name
+    }
+    positionCategory {
+      name
+    }
+  }
+}
