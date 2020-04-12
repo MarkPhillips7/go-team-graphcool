@@ -369,6 +369,7 @@ type Formation @model {
   formationCode: String # 1-4-3-3, 1-1.2.1-4-2 (goalie-defense-midfield-offense)
   positions: [Position!]! @relation(name: "FormationsPositions")
   formationSubstitution: [FormationSubstitution!]! @relation(name: "FormationOnFormationSubstitution")
+  lineups: [Lineup!]! @relation(name: "FormationOnLineup")
   # gameFormations: [GameFormation!]! @relation(name: "FormationOnGameFormation")
 }
 
@@ -386,9 +387,17 @@ type Position @model {
   name: String!
   lateralLocation: LateralLocation
   leftToRightPercent: Float
+  backToFrontPercent: Float
   positionCategory: PositionCategory @relation(name: "PositionCategoryOnPosition")
   formations: [Formation!]! @relation(name: "FormationsPositions")
   playerPositions: [PlayerPosition!]! @relation(name: "PositionOnPlayerPosition")
+}
+
+type Lineup @model {
+  id: ID! @isUnique
+  name: String!
+  formation: Formation! @relation(name: "FormationOnLineup")
+  playerPositions: [PlayerPosition!]! @relation(name: "LineupOnPlayerPosition")
 }
 
 type PlayerPosition @model {
@@ -396,6 +405,7 @@ type PlayerPosition @model {
   player: User! @relation(name: "PlayerOnPlayerPosition")
   position: Position @relation(name: "PositionOnPlayerPosition")
   playerPositionAssignments: [PlayerPositionAssignment!]! @relation(name: "PlayerPositionOnPlayerPositionAssignment")
+  lineup: Lineup @relation(name: "LineupOnPlayerPosition")
 }
 
 type PlayerPositionAssignment @model {
