@@ -288,6 +288,17 @@ type FormationSubstitution @model {
   formation: Formation! @relation(name: "FormationOnFormationSubstitution")
 }
 
+type LineupSubstitution @model {
+  id: ID! @isUnique
+  gameActivityStatus: GameActivityStatus!
+  gameActivityType: GameActivityType!
+  gameTeamSeason: GameTeamSeason @relation(name: "GameTeamSeasonOnLineupSubstitution")
+  timestamp: DateTime
+  totalSeconds: Int  # total seconds since the start of game
+  gameSeconds: Int  # game seconds (ignores breaks for halftime/stoppage time)
+  lineup: Lineup! @relation(name: "LineupOnLineupSubstitution")
+}
+
 type GameActivity @model {
   id: ID! @isUnique
   name: String
@@ -337,6 +348,7 @@ type GameTeamSeason @model {
   gamePlayers: [GamePlayer!]! @relation(name: "GameTeamSeasonOnGamePlayer")
   substitutions: [Substitution!]! @relation(name: "GameTeamSeasonOnSubstitution")
   formationSubstitutions: [FormationSubstitution!]! @relation(name: "GameTeamSeasonOnFormationSubstitution")
+  lineupSubstitutions: [LineupSubstitution!]! @relation(name: "GameTeamSeasonOnLineupSubstitution")
 }
 
 type GamePlayer @model {
@@ -398,6 +410,7 @@ type Lineup @model {
   name: String!
   formation: Formation! @relation(name: "FormationOnLineup")
   playerPositions: [PlayerPosition!]! @relation(name: "LineupOnPlayerPosition")
+  lineupSubstitutions: [LineupSubstitution!]! @relation(name: "LineupOnLineupSubstitution")
 }
 
 type PlayerPosition @model {
